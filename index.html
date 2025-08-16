@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bros City Punch — Ice-Cold Flavor Bombs</title>
+
+<!-- Preload a key top-hero image -->
+<link rel="preload" as="image" href="images/slide-1.jpg" />
+
+<!-- =========================  INLINE CSS  ========================= -->
+<style>
+  :root{
+    --bg:#07070a; --ink:#0e0f12; --card:#111319; --soft:#181b23;
+    --text:#f7f8fc; --muted:#b9bed1; --accent:#ffce00;
+    --red:#ff3b3b; --orange:#ff8a00; --yellow:#ffd400;
+    --green:#20e070; --teal:#1dd6d6; --blue:#2d7bff; --purple:#7b61ff;
+    --radius:22px; --shadow:0 10px 30px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{
+    margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial;
+    color:var(--text);
+    background: radial-gradient(1200px 1200px at 10% -10%, #1a1e2c 0%, #0c0f17 38%, #07090f 65%, #05060b 100%) fixed;
+    overflow-x:hidden;
+  }
+
+  /* Background bubbles (floating) */
+  .bubbles{position:fixed; inset:0; pointer-events:none; z-index:0}
+  .bubbles span{
+    position:absolute; width:14px; height:14px; border-radius:50%;
+    background:linear-gradient(180deg, #ffffff33, #ffffff05);
+    box-shadow:0 0 0 1px #ffffff18 inset, 0 8px 20px #00000070;
+    animation: rise var(--t) linear infinite;
+    left:var(--x); bottom:-60px; filter:blur(.2px)
+  }
+  @keyframes rise { to { transform: translateY(-120vh) scale(1.2) } }
+
+  /* Top Nav */
+  header{
+    position:sticky; top:0; z-index:10;
+    background:linear-gradient(180deg, rgba(8,10,16,.85), rgba(8,10,16,.55));
+    backdrop-filter: blur(8px);
+    border-bottom:1px solid #ffffff14;
+  }
+  .nav{
+    max-width:1200px; margin:auto; padding:14px 18px; display:flex; align-items:center; gap:14px;
+  }
+  .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--text) }
+  .brand img{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow: var(--shadow) }
+  .brand b{ font-weight:800; letter-spacing:.4px }
+  .pill{ margin-left:auto; display:flex; gap:10px; flex-wrap:wrap }
+  .pill a{
+    color:var(--text); text-decoration:none; font-weight:600;
+    padding:10px 14px; border-radius:999px; border:1px solid #ffffff18;
+  }
+  .pill a:hover{ background:#ffffff0e }
+  .cta{
+    background:linear-gradient(135deg, var(--orange), var(--red)); color:#111; border:0;
+    padding:10px 14px; border-radius:999px; font-weight:800; cursor:pointer;
+    box-shadow: 0 8px 24px #ff6a002e, inset 0 -2px 0 #00000022;
+  }
+  .cta:hover{ transform: translateY(-1px) }
+
+  /* ================= TOP FULL-WIDTH SLIDESHOW ================= */
+  .top-hero{
+    position:relative; z-index:1;
+    width:100%;
+    aspect-ratio: 16/9;            /* keeps shape across screens */
+    max-height:70vh;               /* don’t be too tall on big screens */
+    min-height:240px;              /* keep presence on small phones */
+    border-bottom:1px solid #ffffff14;
+    overflow:hidden;
+  }
+  .top-hero .slide{
+    position:absolute; inset:0;
+    opacity:0; transition: opacity .7s ease;
+  }
+  .top-hero .slide[data-active="true"]{ opacity:1 }
+  .top-hero img{
+    width:100%; height:100%; display:block;
+    object-fit:cover;              /* prevents image “smash/squish” */
+    object-position:center;
+    user-select:none; -webkit-user-drag:none;
+  }
+  .top-hero .dots{
+    position:absolute; left:50%; transform:translateX(-50%);
+    bottom:12px; display:flex; gap:8px; padding:6px 10px;
+    background:#0a0c14a8; border:1px solid #ffffff2a; border-radius:999px; backdrop-filter: blur(4px);
+  }
+  .top-hero .dots button{
+    width:9px; height:9px; border-radius:50%; border:0;
+    background:#ffffff66; cursor:pointer;
+  }
+  .top-hero .dots button[aria-current="true"]{ background:#fff }
+
+  @media (max-width: 640px){
+    .top-hero{
+      aspect-ratio: 16/10;        /* a bit taller on phones */
+      max-height:52vh;
+      min-height:220px;
+    }
+  }
+
+  /* Regular hero (kept) */
+  .hero{
+    position:relative; z-index:1;
+    max-width:1200px; margin:26px auto 0; padding:0 18px 34px;
+    display:grid; grid-template-columns: 1.2fr .9fr; gap:24px; align-items:center;
+  }
+  @media (max-width: 860px){
+    .hero{ grid-template-columns: 1fr; }
+  }
+  .tag{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; font-weight:700; font-size:.85rem; background:#ffffff14; border:1px solid #ffffff22 }
+  .spark{ width:9px; height:9px; border-radius:50%; background: conic-gradient(from 0deg, var(--red), var(--orange), var(--yellow), var(--green), var(--teal), var(--blue), var(--purple), var(--red)) }
+  .hero-title{
+    margin:10px 0 4px; line-height:1.02; font-size: clamp(2.2rem, 5.6vw, 4.4rem);
+    background: conic-gradient(from 210deg, #ffe066, #ff6a00, #ff3b3b, #2d7bff, #2ce6bf, #ffe066);
+    -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:900;
+  }
+  .tagline{ font-weight:800; letter-spacing:.25px; color:#ffffffd7 }
+  .hero-card{
+    background:linear-gradient(180deg, #ffffff10, #ffffff06);
+    border:1px solid #ffffff18; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow);
+  }
+  .hero-card img{ width:100%; height:380px; object-fit:cover; border-radius:14px }
+
+  /* Sections */
+  .section{ max-width:1200px; margin:30px auto; padding:0 18px }
+  .section h2{ font-size: clamp(1.6rem, 1.2vw + 1rem, 2.2rem); margin:0 0 12px; letter-spacing:.3px }
+  .muted{ color:var(--muted) }
+
+  /* Flavor grid */
+  .filters{ display:flex; gap:8px; flex-wrap:wrap; margin:12px 0 18px }
+  .chip{
+    padding:8px 12px; border-radius:999px; cursor:pointer; user-select:none;
+    border:1px solid #ffffff18; background:#ffffff08; font-weight:700; font-size:.9rem;
+  }
+  .chip[data-active="true"]{ outline:2px solid #fff2; background:#ffffff12 }
+  .grid{ display:grid; grid-template-columns:repeat(12,1fr); gap:16px }
+  .col-3{ grid-column: span 12 }
+  @media(min-width:640px){ .col-3{ grid-column: span 6 } }
+  @media(min-width:940px){ .col-3{ grid-column: span 4 } }
+  .card{
+    position:relative; overflow:hidden; border-radius:18px; background:var(--soft); border:1px solid #ffffff14;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .card:hover{ transform: translateY(-4px); box-shadow: 0 18px 40px #00000045 }
+  .swatch{
+    position:absolute; inset:0; opacity:.14; filter: blur(24px);
+    background: var(--c, linear-gradient(45deg, #fff, #000));
+  }
+  .card img{ width:100%; height:230px; object-fit:cover; display:block; border-bottom:1px solid #ffffff12 }
+  .pad{ padding:14px 14px 16px }
+  .title{ font-weight:900; letter-spacing:.3px }
+  .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:8px; }
+  .price{ font-weight:900; }
+
+  /* About / contact blocks */
+  .banner{
+    margin:40px 0; border-radius:22px; overflow:hidden; position:relative; z-index:1;
+    background: radial-gradient(600px 280px at 10% 110%, #ff6a0038, transparent 60%),
+                radial-gradient(600px 280px at 100% -10%, #2d7bff38, transparent 60%),
+                #0b0e16;
+    border:1px solid #ffffff14;
+  }
+  .banner-inner{ padding:26px 18px; display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:center }
+  .banner img{ width:100%; height:290px; object-fit:cover; border-radius:16px; border:1px solid #ffffff18 }
+  .about p{ color:var(--muted) }
+  .about ul{ padding-left:18px; line-height:1.85 }
+  .about li{ margin:4px 0 }
+
+  .contact{
+    display:grid; grid-template-columns: 1.3fr .9fr; gap:18px; align-items:start; z-index:1; position:relative;
+    background:linear-gradient(180deg, #111422, #0e121f); border:1px solid #ffffff14; border-radius:22px; padding:16px;
+  }
+  .contact form{ display:grid; gap:10px }
+  .input{
+    background:#0b0f1a; color:var(--text); border:1px solid #ffffff18;
+    border-radius:12px; padding:12px 14px; font-size:1rem; width:100%;
+  }
+  textarea.input{ min-height:120px; resize:vertical }
+  .contact aside{ background:#0c101b; border:1px solid #ffffff14; border-radius:16px; padding:14px }
+  .store-badge{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px }
+  .badge{ background:#fff; color:#111; font-weight:900; border:0; padding:12px 14px; border-radius:14px }
+
+  /* Footer */
+  footer{ border-top:1px solid #ffffff14; margin-top:40px; background:#090b11 }
+  .foot{
+    max-width:1200px; margin:auto; padding:16px 18px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; justify-content:space-between;
+    color:#b8bed0;
+  }
+  .rainbow{ display:inline-flex; gap:6px; align-items:center; margin-left:6px }
+  .dot{ width:10px; height:10px; border-radius:50% }
+  .dot.r{background:var(--red)} .dot.o{background:var(--orange)} .dot.y{background:var(--yellow)}
+  .dot.g{background:var(--green)} .dot.t{background:var(--teal)} .dot.b{background:var(--blue)} .dot.p{background:var(--purple)}
+  .foot a{ color:#e8ecff; text-decoration:none; font-weight:700 }
+</style>
+</head>
+
+<body>
+  <!-- Background bubbles -->
+  <div class="bubbles" aria-hidden="true"></div>
+
+  <!-- =========================  NAV  ========================= -->
+  <header>
+    <nav class="nav">
+      <a class="brand" href="#">
+        <img src="images/broscity-logo.jpg" alt="Bros City Punch logo" />
+        <b>Bros City Punch</b>
+      </a>
+      <div class="pill">
+        <a href="#flavors">Flavors</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <button class="cta" onclick="scrollToId('order')">Order Now</button>
+      </div>
+    </nav>
+  </header>
+
+  <!-- =========================  TOP FULL-WIDTH SLIDESHOW  ========================= -->
+  <section class="top-hero" id="top-hero">
+    <!-- Slides are injected by JS from slide-*.jpg -->
+    <div class="dots" id="top-dots" aria-label="Slide dots"></div>
+  </section>
+
+  <!-- =========================  HERO (kept, small rotator on the right)  ========================= -->
+  <section class="hero">
+    <div>
+      <span class="tag"><span class="spark"></span> Small Batch • Big Vibes</span>
+      <h1 class="hero-title">BROSCITYPUNCH</h1>
+      <p class="tagline">Ice-cold, color-poppin’ drinks crafted by the bros — built for block parties, pop-ups, and sunny days.</p>
+      <p class="muted">From classic fruit punch to neon-blue mystery magic, every pouch is a flavor bomb. No cap, all chill.</p>
+      <div class="actions" style="display:flex; gap:12px; margin-top:18px; flex-wrap:wrap">
+        <button class="btn" onclick="scrollToId('flavors')">Explore Flavors</button>
+        <button class="btn" onclick="openQuickOrder()">Quick Order</button>
+        <button class="btn" onclick="playShowcase()">Play Showcase</button>
+      </div>
+    </div>
+    <div class="hero-card">
+      <!-- SMALL ROTATOR uses slide-*.jpg files ONLY (separate from flavor images) -->
+      <img id="hero-img" src="images/slide-1.jpg" alt="Bros City Punch banner"
+           onerror="this.alt='(missing images/slide-1.jpg)'; this.style.background='#0b0f18'; this.style.minHeight='220px'">
+    </div>
+  </section>
+
+  <!-- =========================  FLAVORS  ========================= -->
+  <section id="flavors" class="section">
+    <h2>Flavors that Go Crazy</h2>
+    <p class="muted">Tap a chip to filter. Click a card to zoom.</p>
+
+    <div class="filters" id="chips">
+      <span class="chip" data-flavor="all" data-active="true">All</span>
+      <span class="chip" data-flavor="blue"        style="background:#2d7bff22;border-color:#2d7bff66">ALONDRA - Blueberry</span>
+      <span class="chip" data-flavor="red"         style="background:#ff3b3b22;border-color:#ff3b3b55">ROSECRANS - Strawberry</span>
+      <span class="chip" data-flavor="orange"      style="background:#ff8a0022;border-color:#ff8a0055">COMPTON WATER - Peach</span>
+      <span class="chip" data-flavor="green"       style="background:#20e07022;border-color:#20e07066">GREEN LEAF - Berry</span>
+      <span class="chip" data-flavor="yellowgreen" style="background:#a3ff0022;border-color:#a3ff0066">DEL AMO - Green Apple</span>
+      <span class="chip" data-flavor="pink"        style="background:#ff4fa622;border-color:#ff4fa666">IMPERIAL - Watermelon</span>
+      <span class="chip" data-flavor="gold"        style="background:#ffd40022;border-color:#ffd40066">CRENSHAW - Mango</span>
+      <span class="chip" data-flavor="purple"      style="background:#7b61ff22;border-color:#7b61ff66">??? - Berry Grape</span>
+    </div>
+
+    <div class="grid" id="grid">
+      <article class="card col-3" data-tags="blue">
+        <div class="swatch" style="--c:radial-gradient(60% 60% at 30% 20%, #7ac4ff, transparent), radial-gradient(60% 60% at 80% 80%, #2d7bff, transparent)"></div>
+        <img src="images/flavor-alondra.jpg" alt="ALONDRA - Blueberry" />
+        <div class="pad">
+          <div class="title">ALONDRA - Blueberry</div>
+          <div class="row"><span class="muted">Sweet blueberry chill</span><span class="price">$5</span></div>
+          <div class="row"><button class="btn" onclick="addToCart('ALONDRA - Blueberry',5)">Add</button><button class="btn" onclick="zoom(this)">Zoom</button></div>
+        </div>
+      </article>
+
+      <article class="card col-3" data-tags="red">
+        <div class="swatch" style="--c:radial-gradient(60% 60% at 30% 20%, #ff7a7a, transparent), radial-gradient(60% 60% at 80% 80%, #ff3b3b, transparent)"></div>
+        <img src="images/flavor-rosecrans.jpg" alt="ROSECRANS - Strawberry" />
+        <div class="pad">
+          <div class="title">ROSECRANS - Strawberry</div>
+          <div class="row"><span class="muted">Fresh strawberry splash</span><span class="price">$5</span></div>
+          <div class="row"><button class="btn" onclick="addToCart('ROSECRANS - Strawberry',5)">Add</button><button class="btn" onclick="zoom(this)">Zoom</button></div>
+        </div>
+      </article>
+
+      <article class="card col-3" data-tags="orange">
+        <div class="swatch" style="--c:radial-gradient(60% 60% at 30% 20%, #ffd86a, transparent), radial-gradient(60% 60% at 80% 80%, #ff8a00, transparent)"></div>
+        <img src="images/flavor-compton-water.jpg" alt="COMPTON WATER - Peach" />
+        <div class="pad">
+          <div class="title">COMPTON WATER - Peach</div>
+          <div class="row"><span class="muted">Juicy peach vibes</span><span class="price">$5</span></div>
+          <div class="row"><button class="btn" onclick="addToCart('COMPTON WATER - Peach',5)">Add</button><button class="btn" onclick="zoom(this)">Zoom</button></div>
+        </div>
+      </article>
+
+      <article class="card col-3" data-tags="green">
+        <div class="swatch" style="--c:radial-gradient(60% 60% at 30% 20%, #a3ff00, transparent), radial-gradient(60% 60% at 80% 80%, #20e070, transparent)"></div>
+        <img src="images/flavor-green-leaf.jpg" alt="GREEN LEAF - Berry" />
+        <div class="pad">
+          <div class="title">GREEN LEAF - Berry</div>
+          <div class="row"><span class="muted">Wild berry blend</span><span class="price">$5</span></div>
+          <div class="row"><button class="btn" onclick="addToCart('GREEN LEAF - Berry',5)">Add</button><button class="btn" onclick="zoom(this)">Zoom</button></div>
+        </div>
+      </article>
+
+      <article class="card col-3" data-tags="yellowgreen">
+        <div class="swatch" style="--c:radial-gradient(60% 60% at 30% 20%, #d4ff8a, transparent), radial-gradient(60% 60% at 80% 80%, #a3ff00, transparent)"></div>
+        <img src="images/flavor-del-amo.jpg" alt="DEL AMO - Green Apple" />
+        <div class="pad">
+          <div class="title">DEL AMO - Green Apple</div>
+          <div class="row"><span class="muted">Crisp green apple punch</span><span class="price">$5</span></div>
+          <div class="row"><button class="btn" onclick="addToCart('DEL AMO - Green Apple',5)">Add</button><button class="btn" onclick="zoom(this)">Zoom</button></div>
+        </div>
+      </article>
+
+      <article class="card col-3" data-tags="pink">
+        <div class="swatch" style="--c:radial-gradient(60% 60% at 30% 20%, #ff85c2, transparent), radial-gradient(60% 60% at 80% 80%, #ff4fa6, transparent)"></div>
+        <img src="images/flavor-imperial.jpg" alt="IMPERIAL - Watermelon" />
+        <div class="pad">
+          <div class="title">IMPERIAL - Watermelon</div>
+          <div class="row"><span class="muted">Sweet summer watermelon</span><span class="price">$5</span></div>
+          <div class="row"><button class="btn" onclick="addToCart('IMPERIAL - Watermelon',5)">Add</button><button class="btn" onclick="zoom(this)">Zoom</button></div>
+        </div>
+      </article>
+
+      <article class="card col-3" data-tags="gold">
+        <div class="swatch" style="--c:radial-gradient(60% 60% at 30% 20%, #ffd86a, transparent), radial-gradient(60% 60% at 80% 80%, #ffb84d, transparent)"></div>
+        <img src="images/flavor-crenshaw.jpg" alt="CRENSHAW - Mango" />
+        <div class="pad">
+          <div class="title">CRENSHAW - Mango</div>
+          <div class="row"><span class="muted">Tropical mango rush</span><span class="price">$5</span></div>
+          <div class="row"><button class="btn" onclick="addToCart('CRENSHAW - Mango',5)">Add</button><button class="btn" onclick="zoom(this)">Zoom</button></div>
+        </div>
+      </article>
+
+      <article class="card col-3" data-tags="purple">
+        <div class="swatch" style="--c:radial-gradient(60% 60% at 30% 20%, #b980ff, transparent), radial-gradient(60% 60% at 80% 80%, #7b61ff, transparent)"></div>
+        <img src="images/flavor-berry-grape.jpg" alt="??? - Berry Grape" />
+        <div class="pad">
+          <div class="title">??? - Berry Grape</div>
+          <div class="row"><span class="muted">Bold berry & grape mix</span><span class="price">$5</span></div>
+          <div class="row"><button class="btn" onclick="addToCart('??? - Berry Grape',5)">Add</button><button class="btn" onclick="zoom(this)">Zoom</button></div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- =========================  ABOUT  ========================= -->
+  <section id="about" class="section banner">
+    <div class="banner-inner">
+      <div class="about">
+        <h2>Made by Bros • Loved by Cities</h2>
+        <p>We started on the block with a cooler, a dream, and a loud logo. Today, Bros City Punch fuels pop-ups, school events, family functions, car meets — anywhere people want flavor and good energy.</p>
+        <ul>
+          <li>Small-batch blends with bold color and crisp chill</li>
+          <li>Pouches, bottles, or gallon jugs for events</li>
+          <li>Wholesale & fundraising programs for teams and orgs</li>
+          <li>Local delivery & pickup (LA area) — shipping soon</li>
+        </ul>
+        <div class="actions" style="display:flex; gap:10px; flex-wrap:wrap">
+          <button class="btn" onclick="openWholesale()">Wholesale / Fundraising</button>
+          <button class="btn" onclick="scrollToId('contact')">Talk to Us</button>
+        </div>
+      </div>
+      <img src="images/slide-2.jpg" alt="Event vibes with Bros City Punch" />
+    </div>
+  </section>
+
+  <!-- =========================  ORDER STRIP  ========================= -->
+  <section id="order" class="section">
+    <div class="contact">
+      <form onsubmit="return sendOrder(this)">
+        <h2>Quick Order</h2>
+        <input class="input" name="name" placeholder="Your name" required />
+        <input class="input" name="phone" placeholder="Phone (for pickup/delivery)" required />
+        <input class="input" name="flavor" placeholder="Flavor(s) & quantity" required />
+        <textarea class="input" name="notes" placeholder="Notes: pickup time, address, event size, etc."></textarea>
+        <button class="btn" type="submit">Send Order</button>
+        <small class="muted">You’ll review the message before sending.</small>
+      </form>
+      <aside>
+        <h3>Where to Find Us</h3>
+        <p class="muted">Pop-ups every weekend. Follow for drops & locations.</p>
+        <div class="store-badge">
+          <a class="badge" href="#" onclick="alert('Instagram handle coming soon')">Instagram</a>
+          <a class="badge" href="#" onclick="alert('TikTok handle coming soon')">TikTok</a>
+          <a class="badge" href="#" onclick="alert('Text order: 555-123-4567')">Text Us</a>
+          <a class="badge" href="#" onclick="alert('Email: hello@broscitypunch.com')">Email</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- =========================  CONTACT  ========================= -->
+  <section id="contact" class="section">
+    <h2>Book Us for Your Next Event</h2>
+    <p class="muted">School fairs • Church functions • Block parties • Sports fundraisers • Birthdays • Markets</p>
+    <div class="actions" style="display:flex; gap:10px; flex-wrap:wrap">
+      <button class="btn" onclick="openWholesale()">Event / Wholesale Form</button>
+      <button class="btn" onclick="openMail('I want Bros City Punch at my event!')">Email Us</button>
+    </div>
+  </section>
+
+  <!-- =========================  FOOTER  ========================= -->
+  <footer>
+    <div class="foot">
+      <div>© <span id="yr"></span> Bros City Punch • Built with
+        <span class="rainbow"><span class="dot r"></span><span class="dot o"></span><span class="dot y"></span><span class="dot g"></span><span class="dot t"></span><span class="dot b"></span><span class="dot p"></span></span>
+      </div>
+      <div><a href="#" onclick="openPrivacy()">Privacy</a> • <a href="#" onclick="openTerms()">Terms</a></div>
+    </div>
+  </footer>
+
+  <!-- =========================  MODAL  ========================= -->
+  <dialog id="modal" style="border:0; border-radius:18px; padding:0; background:#0b0f19; color:var(--text); box-shadow:0 30px 80px #000000aa">
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #ffffff14">
+      <strong id="modal-title">Preview</strong>
+      <button class="btn" onclick="closeModal()">Close</button>
+    </div>
+    <div id="modal-body" style="padding:14px 14px 18px"></div>
+  </dialog>
+
+<!-- =========================  INLINE JS  ========================= -->
+<script>
+  // Decorative bubbles
+  (function bubbles(){
+    const root = document.querySelector('.bubbles');
+    for(let i=0;i<26;i++){
+      const s = document.createElement('span');
+      s.style.setProperty('--x', (Math.random()*100)+'vw');
+      s.style.setProperty('--t', (7+Math.random()*9)+'s');
+      s.style.opacity = .15 + Math.random()*.25;
+      s.style.transform = 'scale('+(0.7+Math.random()*1.2)+')';
+      root.appendChild(s);
+    }
+  })();
+
+  // Helpers
+  const $ = sel => document.querySelector(sel);
+  const $$ = sel => Array.from(document.querySelectorAll(sel));
+  const scrollToId = id => document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* ---------- TOP FULL-WIDTH SLIDESHOW ---------- */
+  const TOP_SLIDES = [
+    "images/slide-1.jpg",
+    "images/slide-2.jpg",
+    "images/slide-3.jpg"
+  ].filter(Boolean);
+  const TOP_SLIDE_MS = 6500; // change speed here (ms)
+  const topRoot = document.getElementById('top-hero');
+  const dotsRoot = document.getElementById('top-dots');
+  let topIdx = 0, topTimer;
+
+  // build slides + dots
+  TOP_SLIDES.forEach((src, i) => {
+    const fig = document.createElement('figure');
+    fig.className = 'slide';
+    const img = document.createElement('img');
+    img.src = src; img.alt = `Slide ${i+1}`;
+    fig.appendChild(img);
+    topRoot.insertBefore(fig, dotsRoot);
+
+    const dot = document.createElement('button');
+    dot.type = 'button';
+    dot.ariaLabel = `Go to slide ${i+1}`;
+    dot.addEventListener('click', ()=>goTop(i));
+    dotsRoot.appendChild(dot);
+  });
+
+  function setTopActive(i){
+    $$('#top-hero .slide').forEach((s, idx) => s.dataset.active = (idx===i ? 'true':'false'));
+    $$('#top-dots button').forEach((d, idx) => d.setAttribute('aria-current', idx===i ? 'true':'false'));
+  }
+  function goTop(i){
+    topIdx = (i + TOP_SLIDES.length) % TOP_SLIDES.length;
+    setTopActive(topIdx);
+    restartTopTimer();
+  }
+  function nextTop(){ goTop(topIdx+1) }
+
+  function startTopTimer(){
+    stopTopTimer();
+    if(TOP_SLIDES.length <= 1) return;
+    topTimer = setInterval(nextTop, TOP_SLIDE_MS);
+  }
+  function stopTopTimer(){ if(topTimer) clearInterval(topTimer) }
+  function restartTopTimer(){ startTopTimer() }
+
+  // touch swipe (mobile)
+  (function enableSwipeTop(){
+    let x0=null;
+    topRoot.addEventListener('pointerdown',e=>{ x0=e.clientX }, {passive:true});
+    topRoot.addEventListener('pointerup',e=>{
+      if(x0===null) return;
+      const dx = e.clientX - x0;
+      if(Math.abs(dx)>40) (dx<0?goTop(topIdx+1):goTop(topIdx-1));
+      x0=null;
+    }, {passive:true});
+  })();
+
+  // init
+  setTopActive(0);
+  window.addEventListener('load', startTopTimer);
+
+  /* ---------- SMALL HERO IMAGE ROTATOR (right card) ---------- */
+  // Uses slide-* files only. If only one file exists, it won't rotate.
+  const heroSlides = [
+    "images/slide-1.jpg",
+    "images/slide-2.jpg",
+    "images/slide-3.jpg"
+  ].filter(Boolean);
+  let heroIndex = 0, heroTimer2;
+  function playHeroSlideshow(){
+    clearInterval(heroTimer2);
+    if(heroSlides.length <= 1) return;
+    heroTimer2 = setInterval(()=>{
+      heroIndex = (heroIndex + 1) % heroSlides.length;
+      const el = document.getElementById('hero-img');
+      if(el) el.src = heroSlides[heroIndex];
+    }, 5200);
+  }
+  window.addEventListener('load', ()=> setTimeout(playHeroSlideshow, 600));
+
+  /* ---------- Flavors filter ---------- */
+  $$('#chips .chip').forEach(chip=>{
+    chip.addEventListener('click',()=>{
+      $$('#chips .chip').forEach(c=>c.dataset.active='false');
+      chip.dataset.active='true';
+      const tag = chip.dataset.flavor;
+      $$('#grid .card').forEach(card=>{
+        if(tag==='all'){ card.style.display='block'; return; }
+        const show = card.dataset.tags?.split(' ').includes(tag);
+        card.style.display = show ? 'block' : 'none';
+      });
+    });
+  });
+
+  /* ---------- Zoom card image ---------- */
+  function zoom(btn){
+    const img = btn.closest('.card').querySelector('img');
+    openModal('Preview', `<img src="${img.src}" alt="" style="max-width:86vw; max-height:70vh; display:block; border-radius:14px" />`);
+  }
+
+  /* ---------- Ultra-light cart ---------- */
+  const cart = [];
+  function addToCart(name, price){
+    const row = cart.find(x=>x.name===name) || cart[cart.push({name, price, qty:0})-1];
+    row.qty++;
+    openModal('Cart', renderCart());
+  }
+  function renderCart(){
+    if(!cart.length) return `<p class="muted">Your cart is empty.</p>`;
+    const lines = cart.map(x=>`
+      <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px dashed #ffffff1e">
+        <b>${x.name}</b>
+        <div>× ${x.qty}</div>
+        <div>$${(x.price*x.qty).toFixed(2)}</div>
+      </div>`).join('');
+    const total = cart.reduce((s,x)=>s+x.price*x.qty,0);
+    return `
+      ${lines}
+      <div style="display:flex; align-items:center; justify-content:space-between; padding-top:10px">
+        <strong>Total</strong><strong>$${total.toFixed(2)}</strong>
+      </div>
+      <div style="display:flex; gap:10px; margin-top:12px">
+        <button class="btn" onclick="checkoutSMS()">Text Order</button>
+        <button class="btn" onclick="checkoutEmail()">Email Order</button>
+      </div>`;
+  }
+  function checkoutSMS(){
+    const msg = encodeURIComponent('Bros City Punch order: ' + cart.map(x=>`${x.qty}× ${x.name}`).join(', '));
+    window.location.href = `sms:?&body=${msg}`;
+  }
+  function checkoutEmail(){
+    const subject = encodeURIComponent('Bros City Punch — Cart Order');
+    const body = encodeURIComponent('Order details:\n' + cart.map(x=>`${x.qty}× ${x.name}`).join('\n'));
+    window.location.href = `mailto:hello@broscitypunch.com?subject=${subject}&body=${body}`;
+  }
+
+  /* ---------- Quick order form ---------- */
+  function sendOrder(form){
+    const data = new FormData(form);
+    const subject = encodeURIComponent('Bros City Punch — Quick Order');
+    const body = encodeURIComponent(
+      `Name: ${data.get('name')}\nPhone: ${data.get('phone')}\nFlavors: ${data.get('flavor')}\nNotes: ${data.get('notes')||''}`
+    );
+    openModal('Send Order', `
+      <p>We’ll open your email app with this message:</p>
+      <pre style="white-space:pre-wrap; background:#0b0f19; border:1px solid #ffffff14; padding:12px; border-radius:12px">${decodeURIComponent(body)}</pre>
+      <button class="btn" onclick="window.location.href='mailto:hello@broscitypunch.com?subject=${subject}&body=${body}'">Open Email</button>
+    `);
+    return false;
+  }
+
+  function openWholesale(){
+    openModal('Wholesale / Fundraising', `
+      <p>Want gallons, cases, or a team fundraiser split? Drop us a line and we’ll send pricing & logistics.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button class="btn" onclick="openMail('Wholesale / Fundraising inquiry')">Email Us</button>
+        <button class="btn" onclick="openSMS('Wholesale / Fundraising inquiry')">Text Us</button>
+      </div>
+    `);
+  }
+
+  function openMail(text){
+    const subject = encodeURIComponent('Bros City Punch');
+    const body = encodeURIComponent(text || 'Let’s talk punch!');
+    window.location.href = `mailto:hello@broscitypunch.com?subject=${subject}&body=${body}`;
+  }
+  function openSMS(text){
+    const msg = encodeURIComponent('Bros City Punch — ' + (text||'Hello!'));
+    window.location.href = `sms:?&body=${msg}`;
+  }
+
+  // Grid showcase modal slideshow (from flavor cards)
+  function playShowcase(){
+    const imgs = $$('#grid img').map(i=>i.src);
+    let n = 0;
+    const el = document.createElement('div');
+    el.style.cssText = "position:relative";
+    el.innerHTML = `<img id="show" src="${imgs[0]}" style="max-width:86vw; max-height:70vh; border-radius:14px; display:block" />`;
+    openModal('Showcase', el.outerHTML);
+    const show = () => {
+      const img = document.getElementById('modal-body').querySelector('#show');
+      if(!img) return clearInterval(timer);
+      img.src = imgs[n++ % imgs.length];
+    };
+    const timer = setInterval(show, 1400);
+  }
+
+  // Modal helpers
+  function openModal(title, html){
+    const dlg = document.getElementById('modal');
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').innerHTML = html;
+    dlg.showModal();
+  }
+  function closeModal(){ document.getElementById('modal').close(); }
+
+  // Quick order button
+  function openQuickOrder(){ scrollToId('order'); }
+
+  // Expose some functions to buttons
+  window.addToCart = addToCart;
+  window.zoom = zoom;
+  window.openWholesale = openWholesale;
+  window.openMail = openMail;
+  window.openSMS = openSMS;
+  window.playShowcase = playShowcase;
+  window.openQuickOrder = openQuickOrder;
+</script>
+
+<!-- =========================  IMAGE PATH QUICK GUIDE  =========================
+Place files in /images :
+
+Banners / slides (used by BOTH top slideshow & small hero rotator):
+  slide-1.jpg, slide-2.jpg, slide-3.jpg ...
+
+Flavor cards (separate from slides):
+  flavor-alondra.jpg
+  flavor-rosecrans.jpg
+  flavor-compton-water.jpg
+  flavor-green-leaf.jpg
+  flavor-del-amo.jpg
+  flavor-imperial.jpg
+  flavor-crenshaw.jpg
+  flavor-berry-grape.jpg
+
+Logo:
+  broscity-logo.jpg
+========================================================================== -->
+</body>
+</html>
