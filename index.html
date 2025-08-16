@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,10 +6,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Bros City Punch — Ice-Cold Flavor Bombs</title>
 
-<!-- Preload a key top-hero image -->
 <link rel="preload" as="image" href="images/slide-1.jpg" />
 
-<!-- =========================  INLINE CSS  ========================= -->
 <style>
   :root{
     --bg:#07070a; --ink:#0e0f12; --card:#111319; --soft:#181b23;
@@ -25,7 +24,10 @@
     overflow-x:hidden;
   }
 
-  /* Background bubbles (floating) */
+  /* Visually hidden labels for a11y */
+  .sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+  /* Bubbles */
   .bubbles{position:fixed; inset:0; pointer-events:none; z-index:0}
   .bubbles span{
     position:absolute; width:14px; height:14px; border-radius:50%;
@@ -36,16 +38,14 @@
   }
   @keyframes rise { to { transform: translateY(-120vh) scale(1.2) } }
 
-  /* Top Nav */
+  /* Nav */
   header{
     position:sticky; top:0; z-index:10;
     background:linear-gradient(180deg, rgba(8,10,16,.85), rgba(8,10,16,.55));
     backdrop-filter: blur(8px);
     border-bottom:1px solid #ffffff14;
   }
-  .nav{
-    max-width:1200px; margin:auto; padding:14px 18px; display:flex; align-items:center; gap:14px;
-  }
+  .nav{ max-width:1200px; margin:auto; padding:14px 18px; display:flex; align-items:center; gap:14px; }
   .brand{ display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--text) }
   .brand img{ width:46px; height:46px; border-radius:50%; object-fit:cover; box-shadow: var(--shadow) }
   .brand b{ font-weight:800; letter-spacing:.4px }
@@ -62,55 +62,32 @@
   }
   .cta:hover{ transform: translateY(-1px) }
 
-  /* ================= TOP FULL-WIDTH SLIDESHOW ================= */
+  /* Top slideshow */
   .top-hero{
-    position:relative; z-index:1;
-    width:100%;
-    aspect-ratio: 16/9;            /* keeps shape across screens */
-    max-height:70vh;               /* don’t be too tall on big screens */
-    min-height:240px;              /* keep presence on small phones */
-    border-bottom:1px solid #ffffff14;
-    overflow:hidden;
+    position:relative; z-index:1; width:100%;
+    aspect-ratio: 16/9; max-height:70vh; min-height:240px;
+    border-bottom:1px solid #ffffff14; overflow:hidden;
   }
-  .top-hero .slide{
-    position:absolute; inset:0;
-    opacity:0; transition: opacity .7s ease;
-  }
+  .top-hero .slide{ position:absolute; inset:0; opacity:0; transition: opacity .7s ease; }
   .top-hero .slide[data-active="true"]{ opacity:1 }
-  .top-hero img{
-    width:100%; height:100%; display:block;
-    object-fit:cover;              /* prevents image “smash/squish” */
-    object-position:center;
-    user-select:none; -webkit-user-drag:none;
-  }
+  .top-hero img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block }
   .top-hero .dots{
-    position:absolute; left:50%; transform:translateX(-50%);
-    bottom:12px; display:flex; gap:8px; padding:6px 10px;
-    background:#0a0c14a8; border:1px solid #ffffff2a; border-radius:999px; backdrop-filter: blur(4px);
+    position:absolute; left:50%; transform:translateX(-50%); bottom:12px;
+    display:flex; gap:8px; padding:6px 10px; background:#0a0c14a8; border:1px solid #ffffff2a; border-radius:999px; backdrop-filter: blur(4px);
   }
-  .top-hero .dots button{
-    width:9px; height:9px; border-radius:50%; border:0;
-    background:#ffffff66; cursor:pointer;
-  }
+  .top-hero .dots button{ width:9px; height:9px; border-radius:50%; border:0; background:#ffffff66; cursor:pointer }
   .top-hero .dots button[aria-current="true"]{ background:#fff }
-
-  @media (max-width: 640px){
-    .top-hero{
-      aspect-ratio: 16/10;        /* a bit taller on phones */
-      max-height:52vh;
-      min-height:220px;
-    }
+  @media (max-width:640px){
+    .top-hero{ aspect-ratio:16/10; max-height:52vh; min-height:220px }
   }
 
-  /* Regular hero (kept) */
+  /* Hero */
   .hero{
     position:relative; z-index:1;
     max-width:1200px; margin:26px auto 0; padding:0 18px 34px;
     display:grid; grid-template-columns: 1.2fr .9fr; gap:24px; align-items:center;
   }
-  @media (max-width: 860px){
-    .hero{ grid-template-columns: 1fr; }
-  }
+  @media (max-width: 860px){ .hero{ grid-template-columns: 1fr; } }
   .tag{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; font-weight:700; font-size:.85rem; background:#ffffff14; border:1px solid #ffffff22 }
   .spark{ width:9px; height:9px; border-radius:50%; background: conic-gradient(from 0deg, var(--red), var(--orange), var(--yellow), var(--green), var(--teal), var(--blue), var(--purple), var(--red)) }
   .hero-title{
@@ -119,10 +96,7 @@
     -webkit-background-clip:text; background-clip:text; color:transparent; font-weight:900;
   }
   .tagline{ font-weight:800; letter-spacing:.25px; color:#ffffffd7 }
-  .hero-card{
-    background:linear-gradient(180deg, #ffffff10, #ffffff06);
-    border:1px solid #ffffff18; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow);
-  }
+  .hero-card{ background:linear-gradient(180deg, #ffffff10, #ffffff06); border:1px solid #ffffff18; border-radius:var(--radius); padding:16px; box-shadow:var(--shadow); }
   .hero-card img{ width:100%; height:380px; object-fit:cover; border-radius:14px }
 
   /* Sections */
@@ -141,15 +115,9 @@
   .col-3{ grid-column: span 12 }
   @media(min-width:640px){ .col-3{ grid-column: span 6 } }
   @media(min-width:940px){ .col-3{ grid-column: span 4 } }
-  .card{
-    position:relative; overflow:hidden; border-radius:18px; background:var(--soft); border:1px solid #ffffff14;
-    transition: transform .15s ease, box-shadow .15s ease;
-  }
+  .card{ position:relative; overflow:hidden; border-radius:18px; background:var(--soft); border:1px solid #ffffff14; transition: transform .15s ease, box-shadow .15s ease; }
   .card:hover{ transform: translateY(-4px); box-shadow: 0 18px 40px #00000045 }
-  .swatch{
-    position:absolute; inset:0; opacity:.14; filter: blur(24px);
-    background: var(--c, linear-gradient(45deg, #fff, #000));
-  }
+  .swatch{ position:absolute; inset:0; opacity:.14; filter: blur(24px); background: var(--c, linear-gradient(45deg, #fff, #000)); }
   .card img{ width:100%; height:230px; object-fit:cover; display:block; border-bottom:1px solid #ffffff12 }
   .pad{ padding:14px 14px 16px }
   .title{ font-weight:900; letter-spacing:.3px }
@@ -166,23 +134,39 @@
   }
   .banner-inner{ padding:26px 18px; display:grid; grid-template-columns: 1fr 1fr; gap:18px; align-items:center }
   .banner img{ width:100%; height:290px; object-fit:cover; border-radius:16px; border:1px solid #ffffff18 }
+  @media (max-width:860px){ .banner-inner{ grid-template-columns:1fr } }
+
   .about p{ color:var(--muted) }
   .about ul{ padding-left:18px; line-height:1.85 }
   .about li{ margin:4px 0 }
 
+  /* ===== QUICK ORDER (fixed for mobile) ===== */
   .contact{
     display:grid; grid-template-columns: 1.3fr .9fr; gap:18px; align-items:start; z-index:1; position:relative;
     background:linear-gradient(180deg, #111422, #0e121f); border:1px solid #ffffff14; border-radius:22px; padding:16px;
   }
-  .contact form{ display:grid; gap:10px }
+  .contact h2{ margin:0 0 8px }
+  .contact form{ display:grid; gap:12px }
   .input{
     background:#0b0f1a; color:var(--text); border:1px solid #ffffff18;
-    border-radius:12px; padding:12px 14px; font-size:1rem; width:100%;
+    border-radius:12px; padding:12px 14px; font-size:16px; /* prevent iOS zoom */ width:100%;
   }
+  .input:focus{ outline:2px solid #ffffff33; border-color:#ffffff44 }
   textarea.input{ min-height:120px; resize:vertical }
+  .contact .btn{ width:100%; padding:12px 14px; font-weight:900 }  /* full-width submit */
   .contact aside{ background:#0c101b; border:1px solid #ffffff14; border-radius:16px; padding:14px }
   .store-badge{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px }
-  .badge{ background:#fff; color:#111; font-weight:900; border:0; padding:12px 14px; border-radius:14px }
+  .badge{ background:#fff; color:#111; font-weight:900; border:0; padding:12px 14px; border-radius:14px; text-align:center }
+
+  /* Mobile layout for Quick Order */
+  @media (max-width:860px){
+    .contact{
+      grid-template-columns:1fr;
+      padding:14px;
+      gap:14px;
+    }
+    .store-badge{ grid-template-columns:1fr } /* one per row */
+  }
 
   /* Footer */
   footer{ border-top:1px solid #ffffff14; margin-top:40px; background:#090b11 }
@@ -199,10 +183,10 @@
 </head>
 
 <body>
-  <!-- Background bubbles -->
+  <!-- Bubbles -->
   <div class="bubbles" aria-hidden="true"></div>
 
-  <!-- =========================  NAV  ========================= -->
+  <!-- NAV -->
   <header>
     <nav class="nav">
       <a class="brand" href="#">
@@ -212,19 +196,19 @@
       <div class="pill">
         <a href="#flavors">Flavors</a>
         <a href="#about">About</a>
+        <a href="#order">Quick Order</a>
         <a href="#contact">Contact</a>
         <button class="cta" onclick="scrollToId('order')">Order Now</button>
       </div>
     </nav>
   </header>
 
-  <!-- =========================  TOP FULL-WIDTH SLIDESHOW  ========================= -->
+  <!-- TOP SLIDESHOW -->
   <section class="top-hero" id="top-hero">
-    <!-- Slides are injected by JS from slide-*.jpg -->
     <div class="dots" id="top-dots" aria-label="Slide dots"></div>
   </section>
 
-  <!-- =========================  HERO (kept, small rotator on the right)  ========================= -->
+  <!-- HERO -->
   <section class="hero">
     <div>
       <span class="tag"><span class="spark"></span> Small Batch • Big Vibes</span>
@@ -238,13 +222,12 @@
       </div>
     </div>
     <div class="hero-card">
-      <!-- SMALL ROTATOR uses slide-*.jpg files ONLY (separate from flavor images) -->
       <img id="hero-img" src="images/slide-1.jpg" alt="Bros City Punch banner"
            onerror="this.alt='(missing images/slide-1.jpg)'; this.style.background='#0b0f18'; this.style.minHeight='220px'">
     </div>
   </section>
 
-  <!-- =========================  FLAVORS  ========================= -->
+  <!-- FLAVORS -->
   <section id="flavors" class="section">
     <h2>Flavors that Go Crazy</h2>
     <p class="muted">Tap a chip to filter. Click a card to zoom.</p>
@@ -344,7 +327,7 @@
     </div>
   </section>
 
-  <!-- =========================  ABOUT  ========================= -->
+  <!-- ABOUT -->
   <section id="about" class="section banner">
     <div class="banner-inner">
       <div class="about">
@@ -365,18 +348,28 @@
     </div>
   </section>
 
-  <!-- =========================  ORDER STRIP  ========================= -->
+  <!-- ===== QUICK ORDER (now mobile-friendly) ===== -->
   <section id="order" class="section">
     <div class="contact">
       <form onsubmit="return sendOrder(this)">
         <h2>Quick Order</h2>
-        <input class="input" name="name" placeholder="Your name" required />
-        <input class="input" name="phone" placeholder="Phone (for pickup/delivery)" required />
-        <input class="input" name="flavor" placeholder="Flavor(s) & quantity" required />
-        <textarea class="input" name="notes" placeholder="Notes: pickup time, address, event size, etc."></textarea>
+
+        <label class="sr-only" for="name">Your name</label>
+        <input class="input" id="name" name="name" placeholder="Your name" autocomplete="name" required />
+
+        <label class="sr-only" for="phone">Phone</label>
+        <input class="input" id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="Phone (for pickup/delivery)" required />
+
+        <label class="sr-only" for="flavor">Flavors & quantity</label>
+        <input class="input" id="flavor" name="flavor" placeholder="Flavor(s) & quantity" required />
+
+        <label class="sr-only" for="notes">Notes</label>
+        <textarea class="input" id="notes" name="notes" placeholder="Notes: pickup time, address, event size, etc."></textarea>
+
         <button class="btn" type="submit">Send Order</button>
         <small class="muted">You’ll review the message before sending.</small>
       </form>
+
       <aside>
         <h3>Where to Find Us</h3>
         <p class="muted">Pop-ups every weekend. Follow for drops & locations.</p>
@@ -390,7 +383,7 @@
     </div>
   </section>
 
-  <!-- =========================  CONTACT  ========================= -->
+  <!-- CONTACT -->
   <section id="contact" class="section">
     <h2>Book Us for Your Next Event</h2>
     <p class="muted">School fairs • Church functions • Block parties • Sports fundraisers • Birthdays • Markets</p>
@@ -400,7 +393,7 @@
     </div>
   </section>
 
-  <!-- =========================  FOOTER  ========================= -->
+  <!-- FOOTER -->
   <footer>
     <div class="foot">
       <div>© <span id="yr"></span> Bros City Punch • Built with
@@ -410,7 +403,7 @@
     </div>
   </footer>
 
-  <!-- =========================  MODAL  ========================= -->
+  <!-- MODAL -->
   <dialog id="modal" style="border:0; border-radius:18px; padding:0; background:#0b0f19; color:var(--text); box-shadow:0 30px 80px #000000aa">
     <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid #ffffff14">
       <strong id="modal-title">Preview</strong>
@@ -419,9 +412,8 @@
     <div id="modal-body" style="padding:14px 14px 18px"></div>
   </dialog>
 
-<!-- =========================  INLINE JS  ========================= -->
 <script>
-  // Decorative bubbles
+  // Bubbles
   (function bubbles(){
     const root = document.querySelector('.bubbles');
     for(let i=0;i<26;i++){
@@ -440,53 +432,28 @@
   const scrollToId = id => document.getElementById(id)?.scrollIntoView({behavior:'smooth', block:'start'});
   document.getElementById('yr').textContent = new Date().getFullYear();
 
-  /* ---------- TOP FULL-WIDTH SLIDESHOW ---------- */
-  const TOP_SLIDES = [
-    "images/slide-1.jpg",
-    "images/slide-2.jpg",
-    "images/slide-3.jpg"
-  ].filter(Boolean);
-  const TOP_SLIDE_MS = 6500; // change speed here (ms)
+  /* Top slideshow */
+  const TOP_SLIDES = ["images/slide-1.jpg","images/slide-2.jpg","images/slide-3.jpg"].filter(Boolean);
+  const TOP_SLIDE_MS = 6500;
   const topRoot = document.getElementById('top-hero');
   const dotsRoot = document.getElementById('top-dots');
   let topIdx = 0, topTimer;
-
-  // build slides + dots
   TOP_SLIDES.forEach((src, i) => {
-    const fig = document.createElement('figure');
-    fig.className = 'slide';
-    const img = document.createElement('img');
-    img.src = src; img.alt = `Slide ${i+1}`;
-    fig.appendChild(img);
+    const fig = document.createElement('figure'); fig.className='slide';
+    const img = document.createElement('img'); img.src=src; img.alt=`Slide ${i+1}`; fig.appendChild(img);
     topRoot.insertBefore(fig, dotsRoot);
-
-    const dot = document.createElement('button');
-    dot.type = 'button';
-    dot.ariaLabel = `Go to slide ${i+1}`;
-    dot.addEventListener('click', ()=>goTop(i));
-    dotsRoot.appendChild(dot);
+    const dot = document.createElement('button'); dot.type='button'; dot.ariaLabel=`Go to slide ${i+1}`;
+    dot.addEventListener('click', ()=>goTop(i)); dotsRoot.appendChild(dot);
   });
-
   function setTopActive(i){
     $$('#top-hero .slide').forEach((s, idx) => s.dataset.active = (idx===i ? 'true':'false'));
     $$('#top-dots button').forEach((d, idx) => d.setAttribute('aria-current', idx===i ? 'true':'false'));
   }
-  function goTop(i){
-    topIdx = (i + TOP_SLIDES.length) % TOP_SLIDES.length;
-    setTopActive(topIdx);
-    restartTopTimer();
-  }
+  function goTop(i){ topIdx = (i + TOP_SLIDES.length) % TOP_SLIDES.length; setTopActive(topIdx); restartTopTimer(); }
   function nextTop(){ goTop(topIdx+1) }
-
-  function startTopTimer(){
-    stopTopTimer();
-    if(TOP_SLIDES.length <= 1) return;
-    topTimer = setInterval(nextTop, TOP_SLIDE_MS);
-  }
+  function startTopTimer(){ stopTopTimer(); if(TOP_SLIDES.length<=1) return; topTimer = setInterval(nextTop, TOP_SLIDE_MS); }
   function stopTopTimer(){ if(topTimer) clearInterval(topTimer) }
   function restartTopTimer(){ startTopTimer() }
-
-  // touch swipe (mobile)
   (function enableSwipeTop(){
     let x0=null;
     topRoot.addEventListener('pointerdown',e=>{ x0=e.clientX }, {passive:true});
@@ -497,18 +464,10 @@
       x0=null;
     }, {passive:true});
   })();
+  setTopActive(0); window.addEventListener('load', startTopTimer);
 
-  // init
-  setTopActive(0);
-  window.addEventListener('load', startTopTimer);
-
-  /* ---------- SMALL HERO IMAGE ROTATOR (right card) ---------- */
-  // Uses slide-* files only. If only one file exists, it won't rotate.
-  const heroSlides = [
-    "images/slide-1.jpg",
-    "images/slide-2.jpg",
-    "images/slide-3.jpg"
-  ].filter(Boolean);
+  /* Small hero rotator */
+  const heroSlides = ["images/slide-1.jpg","images/slide-2.jpg","images/slide-3.jpg"].filter(Boolean);
   let heroIndex = 0, heroTimer2;
   function playHeroSlideshow(){
     clearInterval(heroTimer2);
@@ -521,7 +480,7 @@
   }
   window.addEventListener('load', ()=> setTimeout(playHeroSlideshow, 600));
 
-  /* ---------- Flavors filter ---------- */
+  /* Filters */
   $$('#chips .chip').forEach(chip=>{
     chip.addEventListener('click',()=>{
       $$('#chips .chip').forEach(c=>c.dataset.active='false');
@@ -535,30 +494,26 @@
     });
   });
 
-  /* ---------- Zoom card image ---------- */
+  /* Zoom */
   function zoom(btn){
     const img = btn.closest('.card').querySelector('img');
     openModal('Preview', `<img src="${img.src}" alt="" style="max-width:86vw; max-height:70vh; display:block; border-radius:14px" />`);
   }
 
-  /* ---------- Ultra-light cart ---------- */
+  /* Cart (light) */
   const cart = [];
   function addToCart(name, price){
     const row = cart.find(x=>x.name===name) || cart[cart.push({name, price, qty:0})-1];
-    row.qty++;
-    openModal('Cart', renderCart());
+    row.qty++; openModal('Cart', renderCart());
   }
   function renderCart(){
     if(!cart.length) return `<p class="muted">Your cart is empty.</p>`;
     const lines = cart.map(x=>`
       <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:1px dashed #ffffff1e">
-        <b>${x.name}</b>
-        <div>× ${x.qty}</div>
-        <div>$${(x.price*x.qty).toFixed(2)}</div>
+        <b>${x.name}</b><div>× ${x.qty}</div><div>$${(x.price*x.qty).toFixed(2)}</div>
       </div>`).join('');
     const total = cart.reduce((s,x)=>s+x.price*x.qty,0);
-    return `
-      ${lines}
+    return `${lines}
       <div style="display:flex; align-items:center; justify-content:space-between; padding-top:10px">
         <strong>Total</strong><strong>$${total.toFixed(2)}</strong>
       </div>
@@ -577,7 +532,7 @@
     window.location.href = `mailto:hello@broscitypunch.com?subject=${subject}&body=${body}`;
   }
 
-  /* ---------- Quick order form ---------- */
+  /* Quick order form */
   function sendOrder(form){
     const data = new FormData(form);
     const subject = encodeURIComponent('Bros City Punch — Quick Order');
@@ -601,7 +556,6 @@
       </div>
     `);
   }
-
   function openMail(text){
     const subject = encodeURIComponent('Bros City Punch');
     const body = encodeURIComponent(text || 'Let’s talk punch!');
@@ -612,7 +566,7 @@
     window.location.href = `sms:?&body=${msg}`;
   }
 
-  // Grid showcase modal slideshow (from flavor cards)
+  /* Showcase */
   function playShowcase(){
     const imgs = $$('#grid img').map(i=>i.src);
     let n = 0;
@@ -628,7 +582,7 @@
     const timer = setInterval(show, 1400);
   }
 
-  // Modal helpers
+  /* Modal */
   function openModal(title, html){
     const dlg = document.getElementById('modal');
     document.getElementById('modal-title').textContent = title;
@@ -637,37 +591,16 @@
   }
   function closeModal(){ document.getElementById('modal').close(); }
 
-  // Quick order button
   function openQuickOrder(){ scrollToId('order'); }
-
-  // Expose some functions to buttons
-  window.addToCart = addToCart;
-  window.zoom = zoom;
-  window.openWholesale = openWholesale;
-  window.openMail = openMail;
-  window.openSMS = openSMS;
-  window.playShowcase = playShowcase;
+  window.addToCart = addToCart; window.zoom = zoom; window.openWholesale = openWholesale;
+  window.openMail = openMail; window.openSMS = openSMS; window.playShowcase = playShowcase;
   window.openQuickOrder = openQuickOrder;
 </script>
 
-<!-- =========================  IMAGE PATH QUICK GUIDE  =========================
-Place files in /images :
-
-Banners / slides (used by BOTH top slideshow & small hero rotator):
-  slide-1.jpg, slide-2.jpg, slide-3.jpg ...
-
-Flavor cards (separate from slides):
-  flavor-alondra.jpg
-  flavor-rosecrans.jpg
-  flavor-compton-water.jpg
-  flavor-green-leaf.jpg
-  flavor-del-amo.jpg
-  flavor-imperial.jpg
-  flavor-crenshaw.jpg
-  flavor-berry-grape.jpg
-
-Logo:
-  broscity-logo.jpg
-========================================================================== -->
+<!-- IMAGE GUIDE
+Slides (top + small hero): slide-1.jpg, slide-2.jpg, slide-3.jpg ...
+Flavor cards: flavor-*.jpg (alondra, rosecrans, compton-water, green-leaf, del-amo, imperial, crenshaw, berry-grape)
+Logo: broscity-logo.jpg
+-->
 </body>
 </html>
